@@ -32,21 +32,20 @@ public class BitwardenPlugin extends Plugin
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
-		if (event.getGameState() != GameState.LOGIN_SCREEN)
+		if (event.getGameState() == GameState.LOGGED_IN)
 		{
 			credentialsManager.clearEntries();
-		}
-
-		if (event.getGameState() == GameState.LOGGED_IN && config.clearKeyOnLogin())
-		{
-			credentialsManager.setSessionKey(new SecureString(""));
+			if (config.clearKeyOnLogin())
+			{
+				credentialsManager.setSessionKey(new SecureString(""));
+			}
 		}
 	}
 
 	@Subscribe
 	public void onUsernameChanged(UsernameChanged event)
 	{
-		if (client.getGameState() != GameState.LOGIN_SCREEN || Strings.isNullOrEmpty(client.getUsername()))
+		if (client.getGameState() != GameState.LOGIN_SCREEN)
 		{
 			return;
 		}
