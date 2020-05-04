@@ -25,7 +25,6 @@ final class CredentialsManager
 
 	private boolean keepTrying = true;
 
-
 	@Inject
 	CredentialsManager(Client client)
 	{
@@ -78,7 +77,7 @@ final class CredentialsManager
 
 			setPassword();
 		}
-		catch (JsonParseException e)
+		catch (JsonParseException | NullPointerException e)
 		{
 			entries.clear();
 		}
