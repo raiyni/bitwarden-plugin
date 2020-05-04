@@ -12,6 +12,7 @@ It's recommended you walk through the documentation for [Bitwarden CLI](https://
 
 **As long as you leave the CLI window open with the session key visible, or a browser window with Bitwarden logged in, someone can still access your account on your PC.**
 
+No login information is saved between sessions.
 
 # Usage
 
