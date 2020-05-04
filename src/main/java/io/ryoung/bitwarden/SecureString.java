@@ -5,6 +5,10 @@ import java.util.Arrays;
 
 
 /**
+ * From https://stackoverflow.com/a/58701177
+ *
+ * Changes: Added another constructor
+ *
  * This is not a string but a CharSequence that can be cleared of its memory.
  * Important for handling passwords. Represents text that should be kept
  * confidential, such as by deleting it from computer memory when no longer
