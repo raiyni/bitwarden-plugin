@@ -34,6 +34,7 @@ final class CredentialsManager
 	private void parseIssue(String result)
 	{
 		commandRunner = null;
+		entries.clear();
 
 		if (result.contains("Session key is invalid"))
 		{
@@ -41,30 +42,38 @@ final class CredentialsManager
 			return;
 		}
 
+		if (result.startsWith("? Master password:"))
+		{
+			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Your vault might be locked.",
+				"", JOptionPane.INFORMATION_MESSAGE));
+			return;
+		}
+
 		setSessionKey(new SecureString(""));
-		entries.clear();
 
 		if (result.contains("You are not logged in"))
 		{
 			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "You are not logged into Bitwarden CLI.",
 				"", JOptionPane.INFORMATION_MESSAGE));
-			return;
 		}
-
-		if (result.contains("mac failed"))
+		else if (result.contains("mac failed"))
 		{
 			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error loading vault. Your session key might be wrong." +
 					"\nYou can try logging out of Bitwarden CLI and logging back in.",
 				"", JOptionPane.ERROR_MESSAGE));
-			return;
+		}
+		else
+		{
+			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error loading vault.\nTry logging out of Bitwarden CLI and logging back in.",
+				"", JOptionPane.ERROR_MESSAGE));
 		}
 
-		SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error loading vault.\nTry logging out of Bitwarden CLI and logging back in.",
-			"", JOptionPane.ERROR_MESSAGE));
+		askForKey();
 	}
 
 	private void consumeResult(String result)
 	{
+		System.out.println(result);
 		if (!result.startsWith("["))
 		{
 			parseIssue(result);
