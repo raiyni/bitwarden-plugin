@@ -84,7 +84,6 @@ final class CredentialsManager
 
 	private void consumeResult(String result)
 	{
-		System.out.println(result);
 		if (!result.startsWith("["))
 		{
 			parseIssue(result);
@@ -100,6 +99,9 @@ final class CredentialsManager
 		catch (JsonParseException | NullPointerException e)
 		{
 			entries.clear();
+
+			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error parsing credential results.",
+					"", JOptionPane.ERROR_MESSAGE));
 		}
 		finally
 		{
