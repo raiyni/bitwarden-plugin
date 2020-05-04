@@ -36,8 +36,6 @@ final class Credential
 			JsonDeserializationContext context) throws JsonParseException
 		{
 			JsonObject jsonObject = json.getAsJsonObject();
-			System.out.println(jsonObject);
-
 
 			return Optional.ofNullable(jsonObject.get("login"))
 				.map(JsonElement::getAsJsonObject)
