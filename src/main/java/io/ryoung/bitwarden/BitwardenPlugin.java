@@ -37,7 +37,7 @@ public class BitwardenPlugin extends Plugin
 			credentialsManager.clearEntries();
 			if (config.clearKeyOnLogin())
 			{
-				credentialsManager.setSessionKey(new SecureString(""));
+				credentialsManager.clearSessionKey();
 			}
 		}
 	}
@@ -56,7 +56,11 @@ public class BitwardenPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		credentialsManager.setSessionKey(new SecureString(System.getenv("BW_SESSION")));
+		String envKey = System.getenv("BW_SESSION");
+		if (!Strings.isNullOrEmpty(envKey))
+		{
+			credentialsManager.setSessionKey(envKey.toCharArray());
+		}
 		credentialsManager.injectPassword();
 	}
 

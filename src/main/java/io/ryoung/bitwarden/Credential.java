@@ -17,7 +17,7 @@ final class Credential
 	private final String username;
 
 	@Getter
-	private final SecureString password;
+	private final char[] password;
 
 	static final Type TYPE = new TypeToken<List<Credential>>()
 	{
@@ -26,7 +26,7 @@ final class Credential
 	private Credential(JsonObject jsonObject)
 	{
 		this.username = jsonObject.get("username").getAsString();
-		this.password = new SecureString(jsonObject.get("password").getAsString());
+		this.password = jsonObject.get("password").getAsString().toCharArray();
 	}
 
 	static final class Deserializer implements JsonDeserializer<Credential>

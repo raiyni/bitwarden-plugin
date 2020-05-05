@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
 import javax.swing.JLabel;
@@ -20,7 +21,7 @@ final class CredentialsManager
 	private final Client client;
 	private CommandRunner commandRunner = null;
 
-	private SecureString sessionKey = new SecureString("");
+	private char[] sessionKey = new char[0];
 	private List<Credential> entries = new ArrayList<>();
 
 	private boolean keepTrying = true;
@@ -53,7 +54,7 @@ final class CredentialsManager
 			return;
 		}
 
-		setSessionKey(new SecureString(""));
+		clearSessionKey();
 
 		if (result.contains("You are not logged in"))
 		{
@@ -116,7 +117,7 @@ final class CredentialsManager
 		{
 			if (credential != null && username.equalsIgnoreCase(credential.getUsername()))
 			{
-				client.setPassword(credential.getPassword().asString());
+				client.setPassword(new String(credential.getPassword()));
 				return;
 			}
 		}
@@ -124,10 +125,14 @@ final class CredentialsManager
 		client.setPassword("");
 	}
 
-	void setSessionKey(SecureString key)
+	void clearSessionKey()
 	{
-		this.sessionKey.clear();
-		this.sessionKey = key;
+		this.sessionKey = new char[0];
+	}
+
+	void setSessionKey(char[] key)
+	{
+		this.sessionKey = Arrays.copyOf(key, key.length);
 	}
 
 	void clearEntries()
@@ -137,7 +142,7 @@ final class CredentialsManager
 
 	void reset()
 	{
-		sessionKey.clear();
+		clearSessionKey();
 		entries.clear();
 		commandRunner = null;
 		keepTrying = true;
@@ -145,7 +150,7 @@ final class CredentialsManager
 
 	void injectPassword()
 	{
-		if (sessionKey.length() == 0)
+		if (sessionKey.length == 0)
 		{
 			askForKey();
 		}
@@ -178,13 +183,13 @@ final class CredentialsManager
 				null, null, "");
 			if (option == 0) // pressing OK button
 			{
-				setSessionKey(new SecureString(pass.getPassword()));
+				setSessionKey(pass.getPassword());
 				injectPassword();
 			}
 			else
 			{
 				keepTrying = false;
-				setSessionKey(new SecureString(""));
+				clearSessionKey();
 			}
 		});
 	}
