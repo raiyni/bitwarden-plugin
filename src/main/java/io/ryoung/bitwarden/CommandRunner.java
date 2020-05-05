@@ -21,8 +21,7 @@ class CommandRunner extends Thread
 		super(() -> {
 			try
 			{
-				String filteredKey = CHAR_MATCHER.retainFrom(new String(sessionKey));
-				ProcessBuilder pb = buildCommand(filteredKey);
+				ProcessBuilder pb = buildCommand(new String(sessionKey));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 
@@ -40,6 +39,7 @@ class CommandRunner extends Thread
 
 	private static ProcessBuilder buildCommand(String sessionKey)
 	{
+		String filteredKey = CHAR_MATCHER.retainFrom(sessionKey);
 		List<String> params = new ArrayList<>();
 		if (OSType.getOSType() == OSType.Windows)
 		{
@@ -53,7 +53,7 @@ class CommandRunner extends Thread
 		}
 
 		String redirect = OSType.getOSType() == OSType.Windows ? " < NUL" : " < /dev/null";
-		params.add("bw list items --search runescape.com --session \"" + sessionKey + "\"" + redirect);
+		params.add("bw list items --search runescape.com --session \"" + filteredKey + "\"" + redirect);
 
 		return new ProcessBuilder(params);
 	}
