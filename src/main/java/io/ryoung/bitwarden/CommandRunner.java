@@ -1,5 +1,6 @@
 package io.ryoung.bitwarden;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -9,12 +10,19 @@ import net.runelite.client.util.OSType;
 
 class CommandRunner extends Thread
 {
-	CommandRunner(SecureString sessionKey, Consumer<String> consumer)
+
+	private static final CharMatcher CHAR_MATCHER = CharMatcher.inRange('0', '9')
+		.or(CharMatcher.inRange('a', 'z'))
+		.or(CharMatcher.inRange('A', 'Z'))
+		.or(CharMatcher.anyOf("=+/"));
+
+	CommandRunner(char[] sessionKey, Consumer<String> consumer)
 	{
 		super(() -> {
 			try
 			{
-				ProcessBuilder pb = buildCommand(sessionKey);
+				String filteredKey = CHAR_MATCHER.retainFrom(new String(sessionKey));
+				ProcessBuilder pb = buildCommand(filteredKey);
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 
@@ -30,7 +38,7 @@ class CommandRunner extends Thread
 		});
 	}
 
-	private static ProcessBuilder buildCommand(SecureString sessionKey)
+	private static ProcessBuilder buildCommand(String sessionKey)
 	{
 		List<String> params = new ArrayList<>();
 		if (OSType.getOSType() == OSType.Windows)
@@ -45,7 +53,7 @@ class CommandRunner extends Thread
 		}
 
 		String redirect = OSType.getOSType() == OSType.Windows ? " < NUL" : " < /dev/null";
-		params.add("bw list items --search runescape.com --session \"" + sessionKey.asString() + "\"" + redirect);
+		params.add("bw list items --search runescape.com --session \"" + sessionKey + "\"" + redirect);
 
 		return new ProcessBuilder(params);
 	}

@@ -16,7 +16,7 @@ import net.runelite.api.Client;
 
 final class CredentialsManager
 {
-	private static final Gson gson = new GsonBuilder().registerTypeAdapter(Credential.class, new Credential.Deserializer()).create();
+	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Credential.class, new Credential.Deserializer()).create();
 
 	private final Client client;
 	private CommandRunner commandRunner = null;
@@ -93,7 +93,7 @@ final class CredentialsManager
 
 		try
 		{
-			entries = gson.fromJson(result, Credential.TYPE);
+			entries = GSON.fromJson(result, Credential.TYPE);
 
 			setPassword();
 		}
@@ -102,7 +102,7 @@ final class CredentialsManager
 			entries.clear();
 
 			SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null, "Error parsing credential results.",
-					"", JOptionPane.ERROR_MESSAGE));
+				"", JOptionPane.ERROR_MESSAGE));
 		}
 		finally
 		{
