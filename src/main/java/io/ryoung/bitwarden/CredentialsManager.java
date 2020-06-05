@@ -121,8 +121,6 @@ final class CredentialsManager
 				return;
 			}
 		}
-
-		client.setPassword("");
 	}
 
 	void clearSessionKey()
@@ -178,7 +176,7 @@ final class CredentialsManager
 			JPasswordField pass = new JPasswordField(128);
 			panel.add(label);
 			panel.add(pass);
-			int option = JOptionPane.showOptionDialog(null, panel, "",
+			int option = JOptionPane.showOptionDialog(null, panel, "Bitwarden",
 				JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
 				null, null, "");
 			if (option == 0) // pressing OK button
