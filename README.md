@@ -30,6 +30,7 @@ With this method, you have to keep your session key on hand and enter it every t
 1. Once you switch to the login page, your password should fill in when it matches your username.
     * It may take a few seconds for your information to load depending on your internet connection.
     * If an error occurs, you should receive a popup indicating that.
+1. If you are using the AppImage, you will need to set the path to your executable in the config for the plugin.
     
 #### Passive
 
@@ -39,8 +40,10 @@ With this method, you can manage your vault by locking it after you close RuneLi
 1. Set the environment variable `BW_SESSION` to your key.
     * On Windows, you can use the command `setx` or create an environment variable through the system menus.
     * On OSX/Linux, add the variable to your `.profile` file.
+    * On OSX you might need to set it with `launchctl setenv BW_SESSION "YOUR_SESSION_KEY_HERE"`
 1. Restart RuneLite if it is open.
 1. Once you switch to the login page, your password should fill in when it matches your username.
     * It may take a few seconds for your information to load depending on your internet connection.
     * If an error occurs, you should receive a popup indicating that.
 1. If the session key from `BW_SESSION` seems to be invalid, you will be prompted for a new key.
+1. If you are using the AppImage, you will need to set the path to your executable in the config for the plugin.
