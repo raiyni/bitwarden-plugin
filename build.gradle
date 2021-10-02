@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 repositories {
@@ -10,7 +11,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.6.18-SNAPSHOT'
+def runeLiteVersion = '1.7.24'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -26,9 +27,17 @@ dependencies {
 }
 
 group = 'io.ryoung.bitwarden'
-version = '1.0'
+version = '1.2'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
+}
+
+shadowJar {
+	from sourceSets.test.output
+	configurations = [project.configurations.testRuntimeClasspath]
+	manifest {
+		attributes "Main-Class": "io.ryoung.bitwarden.BitwardenPluginTest"
+	}
 }

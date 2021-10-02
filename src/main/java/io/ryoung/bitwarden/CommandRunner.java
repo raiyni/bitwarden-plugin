@@ -16,12 +16,12 @@ class CommandRunner extends Thread
 		.or(CharMatcher.inRange('A', 'Z'))
 		.or(CharMatcher.anyOf("=+/"));
 
-	CommandRunner(char[] sessionKey, Consumer<String> consumer)
+	CommandRunner(String bw, char[] sessionKey, Consumer<String> consumer)
 	{
 		super(() -> {
 			try
 			{
-				ProcessBuilder pb = buildCommand(new String(sessionKey));
+				ProcessBuilder pb = buildCommand(bw, new String(sessionKey));
 				pb.redirectErrorStream(true);
 				Process p = pb.start();
 
@@ -37,7 +37,7 @@ class CommandRunner extends Thread
 		});
 	}
 
-	private static ProcessBuilder buildCommand(String sessionKey)
+	private static ProcessBuilder buildCommand(String bw, String sessionKey)
 	{
 		String filteredKey = CHAR_MATCHER.retainFrom(sessionKey);
 		List<String> params = new ArrayList<>();
@@ -53,7 +53,7 @@ class CommandRunner extends Thread
 		}
 
 		String redirect = OSType.getOSType() == OSType.Windows ? " < NUL" : " < /dev/null";
-		params.add("bw list items --search runescape.com --session \"" + filteredKey + "\"" + redirect);
+		params.add(bw + " list items --search runescape.com --session \"" + filteredKey + "\"" + redirect);
 
 		return new ProcessBuilder(params);
 	}

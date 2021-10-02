@@ -16,4 +16,14 @@ public interface BitwardenConfig extends Config
 	{
 		return false;
 	}
+
+	@ConfigItem(
+			keyName = "bwLocation",
+			name = "bw location",
+			description = "Location of bw executable"
+	)
+	default String bwLocation()
+	{
+		return "bw";
+	}
 }

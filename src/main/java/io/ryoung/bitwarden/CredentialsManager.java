@@ -25,11 +25,13 @@ final class CredentialsManager
 	private List<Credential> entries = new ArrayList<>();
 
 	private boolean keepTrying = true;
+	private BitwardenConfig config;
 
 	@Inject
-	CredentialsManager(Client client)
+	CredentialsManager(Client client, BitwardenConfig config)
 	{
 		this.client = client;
+		this.config = config;
 	}
 
 	private void parseIssue(String result)
@@ -154,7 +156,7 @@ final class CredentialsManager
 		}
 		else if (commandRunner == null && entries.isEmpty())
 		{
-			commandRunner = new CommandRunner(sessionKey, this::consumeResult);
+			commandRunner = new CommandRunner(config.bwLocation(), sessionKey, this::consumeResult);
 			commandRunner.start();
 		}
 		else
