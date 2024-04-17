@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.SwingUtilities;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 
+@Slf4j
 final class CredentialsManager
 {
 	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Credential.class, new Credential.Deserializer()).create();
@@ -27,17 +30,25 @@ final class CredentialsManager
 	private boolean keepTrying = true;
 	private BitwardenConfig config;
 
+	private boolean developerMode;
+
 	@Inject
-	CredentialsManager(Client client, BitwardenConfig config)
+	CredentialsManager(Client client, BitwardenConfig config, @Named("developerMode") boolean developerMode)
 	{
 		this.client = client;
 		this.config = config;
+		this.developerMode = developerMode;
 	}
 
 	private void parseIssue(String result)
 	{
 		commandRunner = null;
 		entries.clear();
+
+		if (developerMode)
+		{
+			log.error(result);
+		}
 
 		if (result.contains("Session key is invalid"))
 		{
@@ -70,7 +81,12 @@ final class CredentialsManager
 		{
 			SwingUtilities.invokeLater(() -> {
 				JOptionPane.showMessageDialog(null, "Error loading vault. Your session key might be wrong." +
-						"\nYou can try logging out of Bitwarden CLI and logging back in.",
+						"\nTry: " +
+						"\n1. Closing RuneLite" +
+						"\n2. Locking your vault" +
+						"\n3. Deleting your session key" +
+						"\n4. Closing your terminal" +
+						"\n5. Then unlock your vault and save your session key",
 					"", JOptionPane.ERROR_MESSAGE);
 				askForKey();
 			});
@@ -78,7 +94,7 @@ final class CredentialsManager
 		else
 		{
 			SwingUtilities.invokeLater(() -> {
-				JOptionPane.showMessageDialog(null, "Error loading vault.\nTry logging out of Bitwarden CLI and logging back in.",
+				JOptionPane.showMessageDialog(null, "Unknown error: " + result,
 					"", JOptionPane.ERROR_MESSAGE);
 				askForKey();
 			});
