@@ -1,10 +1,14 @@
 package io.ryoung.bitwarden;
 
 import com.google.common.base.CharMatcher;
-import com.google.common.io.ByteStreams;
+import com.google.common.io.CharStreams;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import net.runelite.client.util.OSType;
 
@@ -22,18 +26,44 @@ class CommandRunner extends Thread
 			try
 			{
 				ProcessBuilder pb = buildCommand(bw, new String(sessionKey));
-				pb.redirectErrorStream(true);
 				Process p = pb.start();
 
-				byte[] bytes = ByteStreams.toByteArray(p.getInputStream());
-				p.waitFor();
+				CompletableFuture<String> sout = readOutStream(p.getInputStream());
+				CompletableFuture<String> serror = readOutStream(p.getErrorStream());
+				CompletableFuture<String> result = sout.thenCombine(serror, (stdout, stderr) ->
+				{
+					if (!stdout.startsWith("["))
+					{
+						return stdout + stderr;
+					}
 
-				consumer.accept(new String(bytes));
+					return stdout;
+				});
+
+				p.waitFor();
+				consumer.accept(result.get());
 			}
-			catch (IOException | InterruptedException e)
+			catch (IOException | InterruptedException | ExecutionException e)
 			{
 				// do nothing
 			}
+		});
+	}
+
+	static CompletableFuture<String> readOutStream(InputStream is)
+	{
+		return CompletableFuture.supplyAsync(() -> {
+			String s = "";
+			try
+			{
+				s = CharStreams.toString(new InputStreamReader(is));
+			}
+			catch (IOException e)
+			{
+				// do nothing
+			}
+
+			return s;
 		});
 	}
 
