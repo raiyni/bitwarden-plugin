@@ -19,7 +19,7 @@ import net.runelite.api.Client;
 @Slf4j
 final class CredentialsManager
 {
-	private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Credential.class, new Credential.Deserializer()).create();
+	private final Gson GSON;
 
 	private final Client client;
 	private CommandRunner commandRunner = null;
@@ -33,11 +33,12 @@ final class CredentialsManager
 	private boolean developerMode;
 
 	@Inject
-	CredentialsManager(Client client, BitwardenConfig config, @Named("developerMode") boolean developerMode)
+	CredentialsManager(Client client, BitwardenConfig config, @Named("developerMode") boolean developerMode, Gson gson)
 	{
 		this.client = client;
 		this.config = config;
 		this.developerMode = developerMode;
+		this.GSON = gson.newBuilder().registerTypeAdapter(Credential.class, new Credential.Deserializer()).create();
 	}
 
 	private void parseIssue(String result)
